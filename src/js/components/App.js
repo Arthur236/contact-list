@@ -1,15 +1,16 @@
-var React = require('react');
-var createReactClass = require('create-react-class');
-var AppActions = require('../actions/AppActions');
-var AppStore = require('../stores/AppStore');
+let React = require('react');
+let createReactClass = require('create-react-class');
+let AppActions = require('../actions/AppActions');
+let AppStore = require('../stores/AppStore');
+let AddForm = require('./AddForm.js');
 
 function getAppState(){
 	return {
-
+		contacts: AppStore.getContacts()
 	}
 }
 
-var App = createReactClass({
+let App = createReactClass({
 	getInitialState: function() {
 		return getAppState();
 	},
@@ -23,9 +24,10 @@ var App = createReactClass({
 	},
 
     render: function() {
+		console.log(this.state.contacts);
         return (
             <div>
-                CONTACT LIST
+                <AddForm />
             </div>
         )
     },

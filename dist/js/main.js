@@ -22403,24 +22403,71 @@ let AppDispatcher = require('../dispatcher/AppDispatcher');
 let AppConstants = require('../constants/AppConstants');
 
 let AppActions = {
-
+    saveContact: function (contact) {
+        AppDispatcher.handleViewAction({
+            actionType: AppConstants.SAVE_CONTACT,
+            contact: contact
+        });
+    }
 };
 
 module.exports = AppActions;
 
-},{"../constants/AppConstants":39,"../dispatcher/AppDispatcher":40}],38:[function(require,module,exports){
-var React = require('react');
-var createReactClass = require('create-react-class');
-var AppActions = require('../actions/AppActions');
-var AppStore = require('../stores/AppStore');
+},{"../constants/AppConstants":40,"../dispatcher/AppDispatcher":41}],38:[function(require,module,exports){
+let React = require('react');
+let createReactClass = require('create-react-class');
+let AppActions = require('../actions/AppActions');
+let AppStore = require('../stores/AppStore');
+
+let AddForm = createReactClass({
+    render: function() {
+        return (
+            React.createElement("div", {className: "well"}, 
+                React.createElement("h3", null, "Add Contact"), 
+                React.createElement("form", {onSubmit: this.handleSubmit}, 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "text", ref: "name", className: "form-control", placeholder: "Contact Name"})
+                    ), 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "text", ref: "phone", className: "form-control", placeholder: "Phone Number"})
+                    ), 
+                    React.createElement("div", {className: "form-group"}, 
+                        React.createElement("input", {type: "email", ref: "email", className: "form-control", placeholder: "Email Address"})
+                    ), 
+                    React.createElement("button", {type: "submit", className: "btn btn-success"}, "Add")
+                )
+            )
+        )
+    },
+
+    handleSubmit: function (e) {
+        e.preventDefault();
+
+        let contact = {
+            name: this.refs.name.value.trim(),
+            phone: this.refs.phone.value.trim(),
+            email: this.refs.email.value.trim()
+        };
+
+        AppActions.saveContact(contact);
+    }
+});
+
+module.exports = AddForm;
+},{"../actions/AppActions":37,"../stores/AppStore":43,"create-react-class":2,"react":36}],39:[function(require,module,exports){
+let React = require('react');
+let createReactClass = require('create-react-class');
+let AppActions = require('../actions/AppActions');
+let AppStore = require('../stores/AppStore');
+let AddForm = require('./AddForm.js');
 
 function getAppState(){
 	return {
-
+		contacts: AppStore.getContacts()
 	}
 }
 
-var App = createReactClass({
+let App = createReactClass({
 	getInitialState: function() {
 		return getAppState();
 	},
@@ -22434,9 +22481,10 @@ var App = createReactClass({
 	},
 
     render: function() {
+		console.log(this.state.contacts);
         return (
             React.createElement("div", null, 
-                "CONTACT LIST"
+                React.createElement(AddForm, null)
             )
         )
     },
@@ -22448,12 +22496,11 @@ var App = createReactClass({
 
 module.exports = App;
 
-},{"../actions/AppActions":37,"../stores/AppStore":42,"create-react-class":2,"react":36}],39:[function(require,module,exports){
+},{"../actions/AppActions":37,"../stores/AppStore":43,"./AddForm.js":38,"create-react-class":2,"react":36}],40:[function(require,module,exports){
 module.exports = {
-
-}
-
-},{}],40:[function(require,module,exports){
+    SAVE_CONTACT: 'SAVE_CONTACT'
+};
+},{}],41:[function(require,module,exports){
 let Dispatcher = require('flux').Dispatcher;
 let assign = require('object-assign');
 
@@ -22469,7 +22516,7 @@ let AppDispatcher = assign(new Dispatcher(), {
 
 module.exports = AppDispatcher;
 
-},{"flux":22,"object-assign":24}],41:[function(require,module,exports){
+},{"flux":22,"object-assign":24}],42:[function(require,module,exports){
 var App = require('./components/App');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -22479,7 +22526,7 @@ ReactDOM.render(
 	React.createElement(App, null),
 	document.getElementById('root')
 );
-},{"./components/App":38,"./utils/appAPI":43,"react":36,"react-dom":33}],42:[function(require,module,exports){
+},{"./components/App":39,"./utils/appAPI":44,"react":36,"react-dom":33}],43:[function(require,module,exports){
 let AppDispatcher = require('../dispatcher/AppDispatcher');
 let AppConstants = require('../constants/AppConstants');
 let EventEmitter = require('events').EventEmitter;
@@ -22488,9 +22535,17 @@ let AppAPI = require('../utils/appAPI');
 
 let CHANGE_EVENT = 'change';
 
-let _items = [];
+let _contacts = [];
 
 let AppStore = assign({}, EventEmitter.prototype, {
+	getContacts: function () {
+		return _contacts;
+    },
+
+    saveContact: function (contact) {
+        _contacts.push(contact);
+    },
+
 	addChangeListener: function(callback){
 		this.on('change', callback);
 	},
@@ -22504,7 +22559,15 @@ AppDispatcher.register(function(payload){
 	let action = payload.action;
 
 	switch(action.actionType){
-		
+		case AppConstants.SAVE_CONTACT:
+			console.log("Saving contact");
+
+			// Store save
+			AppStore.saveContact(action.contact);
+
+			// Emit change
+			AppStore.emit(CHANGE_EVENT);
+			break;
 	}
 
 	return true;
@@ -22512,10 +22575,10 @@ AppDispatcher.register(function(payload){
 
 module.exports = AppStore;
 
-},{"../constants/AppConstants":39,"../dispatcher/AppDispatcher":40,"../utils/appAPI":43,"events":3,"object-assign":24}],43:[function(require,module,exports){
+},{"../constants/AppConstants":40,"../dispatcher/AppDispatcher":41,"../utils/appAPI":44,"events":3,"object-assign":24}],44:[function(require,module,exports){
 let AppActions = require('../actions/AppActions');
 
 module.exports = {
 
 };
-},{"../actions/AppActions":37}]},{},[41]);
+},{"../actions/AppActions":37}]},{},[42]);
