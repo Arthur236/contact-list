@@ -1,7 +1,7 @@
 let AppDispatcher = require('../dispatcher/AppDispatcher');
 let AppConstants = require('../constants/AppConstants');
 let EventEmitter = require('events').EventEmitter;
-let assign = require('object-assign')
+let assign = require('object-assign');
 let AppAPI = require('../utils/appAPI');
 
 let CHANGE_EVENT = 'change';
@@ -15,6 +15,10 @@ let AppStore = assign({}, EventEmitter.prototype, {
 
     saveContact: function (contact) {
         _contacts.push(contact);
+    },
+
+	setContacts: function (contacts) {
+		_contacts = contacts;
     },
 
 	addChangeListener: function(callback){
@@ -36,9 +40,22 @@ AppDispatcher.register(function(payload){
 			// Store save
 			AppStore.saveContact(action.contact);
 
+			// Save to API
+			AppAPI.saveContact(action.contact);
+
 			// Emit change
 			AppStore.emit(CHANGE_EVENT);
 			break;
+
+        case AppConstants.RECEIVE_CONTACTS:
+            console.log("Receiving contacts");
+
+            // Store save
+            AppStore.setContacts(action.contacts);
+
+            // Emit change
+            AppStore.emit(CHANGE_EVENT);
+            break;
 	}
 
 	return true;
