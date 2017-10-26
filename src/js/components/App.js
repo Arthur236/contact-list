@@ -1,15 +1,19 @@
-var React = require('react');
-var createReactClass = require('create-react-class');
-var AppActions = require('../actions/AppActions');
-var AppStore = require('../stores/AppStore');
+let React = require('react');
+let createReactClass = require('create-react-class');
+let AppActions = require('../actions/AppActions');
+let AppStore = require('../stores/AppStore');
+let AddForm = require('./AddForm.js');
+let EditForm = require('./EditForm.js');
+let ContactList = require('./ContactList.js');
 
 function getAppState(){
 	return {
-
+		contacts: AppStore.getContacts(),
+        contactToEdit: AppStore.getContactToEdit()
 	}
 }
 
-var App = createReactClass({
+let App = createReactClass({
 	getInitialState: function() {
 		return getAppState();
 	},
@@ -23,9 +27,16 @@ var App = createReactClass({
 	},
 
     render: function() {
+		if(this.state.contactToEdit === '') {
+			var form = <AddForm />
+		} else {
+			var form = <EditForm contactToEdit={this.state.contactToEdit} />
+		}
+
         return (
             <div>
-                CONTACT LIST
+				{form}
+				<ContactList contacts={this.state.contacts} />
             </div>
         )
     },
