@@ -40,5 +40,16 @@ module.exports = {
     removeContact: function (contactId) {
         let contactsRef = fire.database().ref('contacts');
         contactsRef.child(contactId).remove();
+    },
+
+    updateContact: function (contact) {
+        let id = contact.id;
+        let updatedContact = {
+            name: contact.name,
+            phone: contact.phone,
+            email: contact.email
+        };
+        let contactsRef = fire.database().ref('contacts');
+        contactsRef.child(id).update(updatedContact);
     }
 };
