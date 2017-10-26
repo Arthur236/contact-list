@@ -3,6 +3,7 @@ let createReactClass = require('create-react-class');
 let AppActions = require('../actions/AppActions');
 let AppStore = require('../stores/AppStore');
 let AddForm = require('./AddForm.js');
+let ContactList = require('./ContactList.js');
 
 function getAppState(){
 	return {
@@ -28,6 +29,7 @@ let App = createReactClass({
         return (
             <div>
                 <AddForm />
+				<ContactList contacts={this.state.contacts} />
             </div>
         )
     },

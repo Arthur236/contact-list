@@ -35,5 +35,10 @@ module.exports = {
                 AppActions.receiveContacts(contacts);
             });
         });
+    },
+    
+    removeContact: function (contactId) {
+        let contactsRef = fire.database().ref('contacts');
+        contactsRef.child(contactId).remove();
     }
 };
